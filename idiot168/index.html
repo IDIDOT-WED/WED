@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title> IDIOT 168 </title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Prompt', sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      overflow: hidden;
+      background-image: url('PHOTO1.PNG');
+      background-size: cover;
+      background-position: center;
+      transition: background-image 1s ease-in-out;
+    }
+
+    #particles-js {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    .glass-bg {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+
+    .site-title {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2.5rem;
+      color: white;
+      font-weight: 700;
+      text-shadow: 0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(255,255,255,0.5);
+      z-index: 40;
+      pointer-events: none;
+    }
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 12px 20px;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 30;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .topbar-left, .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .topbar a, .topbar button {
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .topbar a:hover, .topbar button:hover {
+      background-color: rgba(255,255,255,0.2);
+    }
+
+    #profileContainer {
+      margin-top: 90px;
+      height: calc(100vh - 180px);
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="particles-js"></div>
+
+  <!-- TITLE -->
+  <div id="main-title" class="site-title">IDIOT 168</div>
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <a href="#" onclick="showMemberAlpha()">IDIOT REAL</a>
+      <a href="#" onclick="showWinterfell()">IDIOT 168</a>
+      <a href="#" onclick="showAlphaOffice()">THEBOSS</a>
+      <a href="#" onclick="showTheBossAlpha()">THE QUEEN</a>
+      <a href="#" onclick="showZero()">U26</a>
+    </div>
+    <div class="topbar-right">
+      <input id="searchInput" type="text" placeholder="ค้นหา..." class="px-3 py-1 rounded-full text-black">
+      <button onclick="searchProfiles()">🔍</button>
+      <a href="#" onclick="location.reload()">Home</a>
+    </div>
+  </div>
+
+  <!-- PROFILES -->
+  <div id="profileContainer" class="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 text-center"></div>
+
+  <!-- MUSIC CONTROL -->
+  <div class="absolute bottom-4 left-4 z-40 flex gap-2">
+    <button onclick="toggleMusic()" class="bg-black/60 px-3 py-2 rounded-lg text-white">Play/Pause</button>
+    <button onclick="adjustVolume(-0.1)" class="bg-black/60 px-3 py-2 rounded-lg text-white">-</button>
+    <button onclick="adjustVolume(0.1)" class="bg-black/60 px-3 py-2 rounded-lg text-white">+</button>
+  </div>
+
+  <!-- BACKGROUND SWITCH -->
+  <button onclick="toggleBackground()" class="fixed bottom-4 right-4 px-4 py-2 bg-blue-500 rounded-xl z-50">☯</button>
+
+  <!-- AUDIO -->
+  <audio id="audio" src="Dara.mp3" preload="auto"></audio>
+
+  <script>
+    let profiles = [];
+    let bgToggle = true;
+    const fallbackImage = "Phofier.png";
+
+    function getFallbackImage(link) {
+      return link ? link : fallbackImage;
+    }
+
+    function searchProfiles() {
+      const query = document.getElementById("searchInput").value.toLowerCase();
+      const filtered = profiles.filter(p => p.name.toLowerCase().includes(query));
+      displayProfiles(filtered);
+    }
+
+    function displayProfiles(data) {
+      const container = document.getElementById("profileContainer");
+      container.innerHTML = "";
+      data.forEach(p => {
+        container.innerHTML += `
+          <div class='glass-bg p-3 rounded-xl shadow text-white'>
+            <img src="${getFallbackImage(p.img)}" onerror="this.src='${fallbackImage}'" class='w-full rounded-lg mb-2'>
+            <a href="${p.link}" target="_blank" class="text-base font-semibold block">${p.name}</a>
+          </div>
+        `;
+      });
+    }
+
+    function toggleBackground() {
+      document.body.style.opacity = 0;
+      setTimeout(() => {
+        document.body.style.backgroundImage = bgToggle ? "url('PHOTO2.PNG')" : "url('PHOTO1.PNG')";
+        bgToggle = !bgToggle;
+        document.body.style.opacity = 1;
+      }, 300);
+    }
+
+    function toggleMusic() {
+      const audio = document.getElementById("audio");
+      audio.paused ? audio.play() : audio.pause();
+    }
+
+    function adjustVolume(change) {
+      const audio = document.getElementById("audio");
+      audio.volume = Math.min(Math.max(audio.volume + change, 0), 1);
+    }
+
+    async function loadProfilesFromFile(fileName) {
+      try {
+        const res = await fetch(fileName);
+        const text = await res.text();
+        const lines = text.trim().split('\n');
+        profiles = [];
+
+        for (let i = 0; i < lines.length; i += 3) {
+          const name = lines[i];
+          const link = lines[i+1];
+          const img = lines[i+2];
+          if (name && link && img) {
+            profiles.push({ name, link, img });
+          }
+        }
+        displayProfiles(profiles);
+      } catch (error) {
+        console.error('Error loading profiles:', error);
+      }
+    }
+
+    function updateTitle(newTitle) {
+      document.getElementById("main-title").innerText = newTitle;
+    }
+
+    async function showMemberAlpha() {
+      updateTitle("MEMBER IN IDIOT REAL");
+      await loadProfilesFromFile('Name1.txt');
+    }
+
+    async function showWinterfell() {
+      updateTitle("MEMBER IN IDIOT 168");
+      await loadProfilesFromFile('Name2.txt');
+    }
+
+    async function showAlphaOffice() {
+      updateTitle("THEBOSS");
+      await loadProfilesFromFile('Name3.txt');
+    }
+
+    async function showTheBossAlpha() {
+      updateTitle("MEMBER IN THE QUEEN");
+      await loadProfilesFromFile('Name4.txt');
+    }
+
+    async function showZero() {
+      updateTitle("MEMBER IN 26");
+      await loadProfilesFromFile('Zero.txt');
+    }
+
+    particlesJS.load('particles-js', 'https://cdn.jsdelivr.net/gh/VincentGarreau/particles.js@master/demo/particles.json');
+  </script>
+</body>
+</html>
